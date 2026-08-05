@@ -23,8 +23,39 @@
 </head>
 <body>
 
-  <!-- Cursor glow -->
+  <!-- Single Global Cursor Glow at root level -->
   <div id="cursor-glow" aria-hidden="true"></div>
+
+  <!-- =========================================
+       CINEMATIC INTRO OVERLAY
+       ========================================= -->
+  <div id="cinematic-intro" role="region" aria-label="Intro Welcome Screen">
+    <!-- Neomorphic Top-Right Status Badge -->
+    <div class="intro-neopill" id="ic-tr">
+      <span class="status-dot"></span>
+      <span>Portfolio &mdash; 2026</span>
+    </div>
+
+    <!-- Main text content -->
+    <div class="intro-content">
+      <h1 class="intro-hi" id="intro-hi">Hi</h1>
+      <div class="intro-subtitle">
+        <p class="intro-line-1" id="intro-line-1">I'm Mohammed Nihal S</p>
+        <p class="intro-line-2" id="intro-line-2">Transforming ideas into elegant, efficient, and intelligent software.</p>
+      </div>
+    </div>
+
+    <!-- Scroll hint -->
+    <div class="intro-scroll-hint" id="intro-scroll-hint">
+      <span class="scroll-arrow">&darr;</span> Scroll to begin
+    </div>
+  </div>
+
+  <!-- =========================================
+       PORTFOLIO MAIN (hidden until intro dissolves)
+       ========================================= -->
+  <div id="portfolio-main">
+
 
   <!-- =========================================
        NAVBAR
@@ -37,6 +68,7 @@
         <li><a href="#education">Education</a></li>
         <li><a href="#experience">Experience</a></li>
         <li><a href="#projects">Projects</a></li>
+        <li><a href="#project-links">Repositories</a></li>
         <li><a href="#skills">Skills</a></li>
         <li><a href="#achievements">Awards</a></li>
         <li><a href="#contact">Contact</a></li>
@@ -58,6 +90,7 @@
     <a href="#education"    class="mobile-link">Education</a>
     <a href="#experience"   class="mobile-link">Experience</a>
     <a href="#projects"     class="mobile-link">Projects</a>
+    <a href="#project-links" class="mobile-link">Repositories</a>
     <a href="#skills"       class="mobile-link">Skills</a>
     <a href="#achievements" class="mobile-link">Awards</a>
     <a href="#contact"      class="mobile-link">Contact</a>
@@ -86,7 +119,7 @@
         <div class="hero-meta">
           <div class="hero-meta-item"><i class="ph ph-map-pin"></i><span>Thrissur, Kerala, India</span></div>
           <div class="hero-meta-item"><i class="ph ph-phone"></i><span>+91 70126 71136</span></div>
-          <div class="hero-meta-item"><i class="ph ph-graduation-cap"></i><span>B.Tech CSE &amp; BS (Expected 2027)</span></div>
+          <div class="hero-meta-item"><i class="ph ph-graduation-cap"></i><span>B.Tech CSBS (Expected 2027)</span></div>
         </div>
       </div>
 
@@ -105,9 +138,6 @@
           <div class="hero-avatar-inner">
             <img src="assets/images/profile.jpg" alt="Mohammed Nihal S" id="profile-avatar-img" class="hero-avatar-img" />
           </div>
-          <button type="button" class="photo-change-btn" onclick="openUploadModal()" title="Change Profile Photo">
-            <i class="ph ph-camera"></i>
-          </button>
         </div>
 
       </div>
@@ -125,7 +155,7 @@
         <div class="neo-card about-text-card reveal-left">
           <p>I'm a Computer Science &amp; Business Systems undergraduate at JCT College of Engineering and Technology, Coimbatore &mdash; passionate about the intersection of clean software engineering and intelligent, data-driven systems.</p>
           <p>My academic path combines foundational Computer Science rigour with real-world business applications. I'm drawn to problems that sit at the boundary of code and data: building ML pipelines that make it to production, writing maintainable system-level code, and collaborating across cross-functional teams to ship meaningful technology.</p>
-          <p>I'm actively seeking a Technology Program Internship where I can apply my Python, Java, and ML skill set across the full Software Development Life Cycle &mdash; from requirements gathering through deployment.</p>
+          <p>I'm actively seeking internship and full-time opportunities in Software Development, AI/ML, and related technology domains. I look forward to contributing my skills in Python, Java, Machine Learning, and modern software development practices while learning, collaborating, and delivering meaningful solutions.</p>
         </div>
         <div class="about-stats stagger reveal-right">
           <div class="neo-card stat-card">
@@ -442,6 +472,48 @@
   </section>
 
   <!-- =========================================
+       PROJECT LINKS & REPOSITORIES HUB
+       ========================================= -->
+  <section id="project-links">
+    <div class="container">
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px; margin-bottom: 36px;">
+        <div>
+          <div class="section-label"><i class="ph ph-link-simple"></i> Repository Hub</div>
+          <h2 class="section-title" style="margin-bottom:0;">Project <span>Links &amp; Source Code</span></h2>
+        </div>
+        <button type="button" class="neo-btn primary" onclick="openAddLinkModal()">
+          <i class="ph ph-plus-circle"></i> Add Project Link
+        </button>
+      </div>
+
+      <!-- Links Grid -->
+      <div class="project-links-grid stagger reveal" id="project-links-container">
+
+        <!-- Link Entry: Smiley Slap -->
+        <div class="neo-card project-link-card">
+          <div>
+            <div class="link-card-header">
+              <div class="link-category-tag ml"><i class="ph ph-game-controller"></i> Web Game</div>
+              <span class="link-status live">● Live &amp; Active</span>
+            </div>
+            <h3 class="link-card-title">Smiley Slap</h3>
+            <p class="link-card-desc">A fun interactive browser game where you can slap or pat a smiley character to make it happy or angry.</p>
+          </div>
+          <div class="link-actions">
+            <a href="https://mnihal-dev.github.io/smiley-slap/" target="_blank" rel="noopener" class="link-btn primary-link">
+              <i class="ph ph-globe"></i> Play Game / Live Demo
+            </a>
+            <a href="https://github.com/mnihal-dev/smiley-slap" target="_blank" rel="noopener" class="link-btn secondary-link">
+              <i class="ph ph-github-logo"></i> GitHub Repo
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================
        SKILLS
        ========================================= -->
   <section id="skills">
@@ -637,9 +709,45 @@
     </div>
   </footer>
 
-  <button id="back-top" aria-label="Back to top">
-    <i class="ph ph-arrow-up"></i>
-  </button>
+  <!-- =========================================
+       ADD PROJECT LINK MODAL
+       ========================================= -->
+  <div id="add-link-modal" class="modal-backdrop" aria-hidden="true">
+    <div class="neo-card modal-card">
+      <button type="button" class="modal-close" onclick="closeAddLinkModal()">&times;</button>
+      <h3 style="font-family:var(--font-head);font-size:1.3rem;font-weight:700;color:var(--text-h);margin-bottom:6px;">Add New Project Link</h3>
+      <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:20px;">Post a new repository URL or live project link to your portfolio hub instantly.</p>
+
+      <form id="add-link-form" onsubmit="handleAddNewLink(event)">
+        <div class="form-group">
+          <label class="form-label" for="link-title-input">Project Title</label>
+          <input type="text" id="link-title-input" class="form-input" placeholder="e.g. Validex AI / Web App" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="link-category-input">Category</label>
+          <select id="link-category-input" class="form-input">
+            <option value="AI & ML">AI &amp; Machine Learning</option>
+            <option value="Web App">Web Development</option>
+            <option value="Data & Analytics">Data Analytics</option>
+            <option value="Systems">Systems &amp; Java</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="link-desc-input">Short Description</label>
+          <input type="text" id="link-desc-input" class="form-input" placeholder="Brief summary of what was built..." required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="link-url-input">Repository / Live URL</label>
+          <input type="url" id="link-url-input" class="form-input" placeholder="https://github.com/username/project" required />
+        </div>
+        <button type="submit" class="neo-btn primary" style="width:100%;justify-content:center;margin-top:10px;">
+          <i class="ph ph-plus-circle"></i> Add Project Link
+        </button>
+      </form>
+    </div>
+  </div>
+
+  </div><!-- /#portfolio-main -->
 
   <!-- Custom JavaScript -->
   <script src="js/main.js" defer></script>

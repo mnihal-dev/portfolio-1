@@ -14,7 +14,7 @@ function applyTheme(theme) {
   const html = document.documentElement;
   const body = document.body;
   const themeIcon = document.getElementById('theme-icon');
-  
+
   html.setAttribute('data-theme', theme);
   if (body) body.setAttribute('data-theme', theme);
   localStorage.setItem('nihal-theme', theme);
@@ -46,6 +46,119 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       window.toggleTheme();
     });
+  }
+
+  /* =============================================
+     CINEMATIC INTRO — ONE-TIME SESSION, VIRTUAL SCROLL
+     ============================================= */
+  const introEl         = document.getElementById('cinematic-intro');
+  const introHi         = document.getElementById('intro-hi');
+  const introLine1      = document.getElementById('intro-line-1');
+  const introLine2      = document.getElementById('intro-line-2');
+  const introScrollHint = document.getElementById('intro-scroll-hint');
+  const portfolioMain   = document.getElementById('portfolio-main');
+
+  // Only show intro once per session
+  const introDone = sessionStorage.getItem('intro-done');
+
+  if (introEl && !introDone) {
+    // Lock real page scrolling for entire intro duration
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    let virtualScroll = 0;
+    const maxVirtual  = 420;
+    let scrollReady   = false;
+
+    // ---- Timing Sequence ----
+    setTimeout(() => { if (introHi) introHi.classList.add('step-show'); }, 1000);
+
+    // Hi fades OUT after ~2s of visibility
+    setTimeout(() => {
+      if (introHi) {
+        introHi.classList.remove('step-show');
+        introHi.classList.add('step-hide');
+      }
+    }, 3200);
+
+    setTimeout(() => { if (introLine1) introLine1.classList.add('step-show'); }, 4400);
+    setTimeout(() => { if (introLine2) introLine2.classList.add('step-show'); }, 5600);
+
+    setTimeout(() => {
+      if (introScrollHint) introScrollHint.classList.add('step-show');
+      scrollReady = true;
+    }, 7000);
+
+    // ---- Neomorphic Portfolio 2026 badge fade in ----
+    setTimeout(() => {
+      const badge = document.getElementById('ic-tr');
+      if (badge) badge.classList.add('visible');
+    }, 1400);
+
+
+    // ---- Apply virtual progress ----
+    function applyProgress(progress) {
+      introEl.style.opacity   = (1 - progress).toFixed(3);
+      introEl.style.transform = `translateY(${(-progress * 55).toFixed(1)}px)`;
+
+      // Portfolio only appears in the last 15% of virtual scroll
+      if (portfolioMain) {
+        const p = Math.max(0, (progress - 0.85) / 0.15);
+        portfolioMain.style.opacity   = p.toFixed(3);
+        portfolioMain.style.transform = `translateY(${((1 - p) * 24).toFixed(1)}px)`;
+      }
+
+      if (progress >= 1) {
+        introEl.style.display = 'none';
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        if (portfolioMain) {
+          portfolioMain.style.opacity   = '1';
+          portfolioMain.style.transform = 'none';
+        }
+        sessionStorage.setItem('intro-done', '1');
+        window.removeEventListener('wheel',      onWheel);
+        window.removeEventListener('touchstart', onTouchStart);
+        window.removeEventListener('touchmove',  onTouchMove);
+      }
+    }
+
+    // ---- Virtual Wheel ----
+    function onWheel(e) {
+      e.preventDefault();
+      if (!scrollReady) return;
+      virtualScroll = Math.min(maxVirtual, Math.max(0, virtualScroll + Math.abs(e.deltaY) * 0.9));
+      applyProgress(virtualScroll / maxVirtual);
+    }
+
+    // ---- Virtual Touch ----
+    let touchStartY = 0;
+    function onTouchStart(e) { touchStartY = e.touches[0].clientY; }
+    function onTouchMove(e) {
+      e.preventDefault();
+      if (!scrollReady) return;
+      const delta = touchStartY - e.touches[0].clientY;
+      touchStartY = e.touches[0].clientY;
+      virtualScroll = Math.min(maxVirtual, Math.max(0, virtualScroll + delta * 1.2));
+      applyProgress(virtualScroll / maxVirtual);
+    }
+
+    window.addEventListener('wheel',      onWheel,      { passive: false });
+    window.addEventListener('touchstart', onTouchStart, { passive: false });
+    window.addEventListener('touchmove',  onTouchMove,  { passive: false });
+
+    applyProgress(0);
+
+  } else {
+    // Intro already seen — immediately show portfolio
+    if (introEl) introEl.style.display = 'none';
+    if (portfolioMain) {
+      portfolioMain.style.opacity   = '1';
+      portfolioMain.style.transform = 'none';
+    }
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
   }
 
   /* ---- Mobile Navigation ---- */
@@ -95,37 +208,45 @@ document.addEventListener('DOMContentLoaded', () => {
     backTop.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  /* ---- Cursor Glow ---- */
+  /* ---- Cursor Glow (faint & precise) ---- */
   const glow = document.getElementById('cursor-glow');
+  let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+  let gx = mx, gy = my;
+
   if (glow) {
-    let mx = 0, my = 0, gx = 0, gy = 0;
-    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-    (function animGlow() {
-      gx += (mx - gx) * 0.06;
-      gy += (my - gy) * 0.06;
-      glow.style.left = gx + 'px';
-      glow.style.top  = gy + 'px';
-      requestAnimationFrame(animGlow);
-    })();
+    glow.style.left = gx + 'px';
+    glow.style.top  = gy + 'px';
   }
 
-  /* ---- Fluid Bidirectional Scroll Reveal (Down & Up) ---- */
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX;
+    my = e.clientY;
+  });
+
+  (function animGlow() {
+    gx += (mx - gx) * 0.2;
+    gy += (my - gy) * 0.2;
+    if (glow) {
+      glow.style.left = gx + 'px';
+      glow.style.top  = gy + 'px';
+    }
+    requestAnimationFrame(animGlow);
+  })();
+
+
+  /* ---- Fluid Bidirectional Scroll Reveal ---- */
   const revealTargets = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .stagger > *');
-  
+
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
         } else {
-          // Remove visible when scrolled out so scrolling back up re-triggers fluid animation
           entry.target.classList.remove('visible');
         }
       });
-    }, {
-      threshold: 0.08,
-      rootMargin: '0px 0px -40px 0px'
-    });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
     revealTargets.forEach(el => io.observe(el));
   } else {
@@ -218,7 +339,7 @@ function handleCertUpload(input) {
         <div>
           <div class="cert-icon"><i class="ph ph-certificate"></i></div>
           <h3 class="cert-title">${title}</h3>
-          <p class="cert-issuer">Uploaded Document • ${new Date().getFullYear()}</p>
+          <p class="cert-issuer">Uploaded Document &bull; ${new Date().getFullYear()}</p>
           <p style="font-size:0.85rem;color:var(--text-b);">User uploaded credential document (${file.name}).</p>
         </div>
         <div class="cert-actions">
@@ -240,9 +361,7 @@ function handlePhotoUpload(input) {
     const reader = new FileReader();
     reader.onload = function(e) {
       const imgEl = document.getElementById('profile-avatar-img');
-      if (imgEl) {
-        imgEl.src = e.target.result;
-      }
+      if (imgEl) imgEl.src = e.target.result;
     };
     reader.readAsDataURL(file);
     const nameEl = document.getElementById('photo-file-name');
@@ -251,5 +370,58 @@ function handlePhotoUpload(input) {
 }
 
 function previewDoc(title, issuer) {
-  alert('Previewing ' + title + ' (' + issuer + ').\n\nTo link a permanent PDF file, place it into your "assets/certificates/" directory!');
+  alert('Viewing credential: ' + title + ' (' + issuer + '). Replace this with direct link to your certificate PDF.');
+}
+
+/* ---- Project Link Modal Functions ---- */
+function openAddLinkModal() {
+  const modal = document.getElementById('add-link-modal');
+  if (modal) {
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function closeAddLinkModal() {
+  const modal = document.getElementById('add-link-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+}
+
+function handleAddNewLink(e) {
+  e.preventDefault();
+  const title = document.getElementById('link-title-input').value.trim();
+  const cat   = document.getElementById('link-category-input').value;
+  const desc  = document.getElementById('link-desc-input').value.trim();
+  const url   = document.getElementById('link-url-input').value.trim();
+
+  if (!title || !desc || !url) return;
+
+  const container = document.getElementById('project-links-container');
+  if (container) {
+    const card = document.createElement('div');
+    card.className = 'neo-card project-link-card reveal visible';
+    card.innerHTML = `
+      <div>
+        <div class="link-card-header">
+          <div class="link-category-tag ml"><i class="ph ph-code"></i> ${cat}</div>
+          <span class="link-status live">● New Link</span>
+        </div>
+        <h3 class="link-card-title">${title}</h3>
+        <p class="link-card-desc">${desc}</p>
+      </div>
+      <div class="link-actions">
+        <a href="${url}" target="_blank" rel="noopener" class="link-btn primary-link">
+          <i class="ph ph-arrow-square-out"></i> Open Link
+        </a>
+      </div>
+    `;
+    container.prepend(card);
+  }
+
+  closeAddLinkModal();
+  document.getElementById('add-link-form').reset();
+  alert('Project link "' + title + '" added successfully to your Repositories Hub!');
 }
